@@ -72,9 +72,10 @@ class FileStorage:
         Retrieve an object from the storage based on its class name and id
         """
         if cls and id:
-            key = "{}.{}".format(cls, id)
+            key = "{}.{}".format(cls.__name__, id)
             return self.__objects.get(key, None)
         return None
+
 
 
     def count(self, cls=None):
@@ -83,8 +84,8 @@ class FileStorage:
         """
         if cls is not None:
             count = 0
-            for key, obj in self.__objects.items():
-                if obj.__class__.__name__ == cls:
+            for obj in self.__objects.values():
+                if type(obj) == cls:
                     count += 1
         else:
             count = len(self.__objects)
