@@ -43,13 +43,20 @@ class DBStorage:
     def all(self, cls=None):
         """query on the current database session"""
         new_dict = {}
-        for clss in classes:
-            if cls is None or cls is classes[clss] or cls is clss:
-                objs = self.__session.query(classes[clss]).all()
-                for obj in objs:
-                    key = obj.__class__.__name__ + '.' + obj.id
-                    new_dict[key] = obj
-        return (new_dict)
+        if cls:
+            if type(cls) == str:
+                cls = classes.get(cls, None)
+            if cls:
+                objs = self.__session.query(cls).all()
+            else:
+                objs = []
+        else:
+            objs = self.__session.query(State, City, User, Place, Review).all()
+        for obj in objs:
+            key = "{}.{}".format(obj.__class__.__name__, obj.id)
+            new_dict[key] = obj
+        return new_dict
+
 
     def new(self, obj):
         """add the object to the current database session"""
@@ -81,8 +88,12 @@ class DBStorage:
         found
         """
         if cls and id:
-            key = "{}.{}".format(cls, id)
-            obj = self.__session.query(classes[cls]).filter_by(id=id).first()
+            if type(cls) == str:
+                cls = classes.get(cls, None)
+            if cls:
+                obj = self.__session.query(cls).filter_by(id=id).first()
+            else:
+                obj = None
             return obj
         return None
 
@@ -91,8 +102,22 @@ class DBStorage:
         Returns the number of objects in storage matching the given class name.
         If no name is passed, returns the count of all objects in storage.
         """
-        count = 0
-        for clss in classes:
-            if cls is None or cls is classes[clss] or cls is clss:
-                count += self.__session.query(classes[clss]).count()
-        return
+        if cls:
+            if type(cls) == str:
+                cls = classes.get(cls, None)
+            if cls:
+                count = self.__session.query(cls).count()
+            else:
+                count = 0
+        else:
+            count = sum([
+                self.__session.query(State).count(),
+                self.__session.query(City).count(),
+                self.__session.query(User).count(),
+                self.__session.query(Place).count(),
+                self.__session.query(Review).count(),
+                self.__session.query(Amenity).count(),
+                self.__session.query(PlaceAmenity).count()
+            ])
+        return count
+
