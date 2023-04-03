@@ -21,7 +21,7 @@ classes = {"Amenity": Amenity, "City": City,
 
 
 class DBStorage:
-    """interaacts with the MySQL database"""
+    """interacts with the MySQL database"""
     __engine = None
     __session = None
 
@@ -69,21 +69,21 @@ class DBStorage:
         Base.metadata.create_all(self.__engine)
         sess_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(sess_factory)
-        self.__session = Session
+        self.__session = Session()
 
     def close(self):
         """call remove() method on the private session attribute"""
         self.__session.remove()
-        
+
     def get(self, cls, id):
         """
         Returns the object based on the class name and its ID, or None if not
         found
         """
-        objects = self.__session.query(classes[cls])
-        for obj in objects:
-            if obj.id == id:
-                return obj
+        if cls and id:
+            key = "{}.{}".format(cls, id)
+            obj = self.__session.query(classes[cls]).filter_by(id=id).first()
+            return obj
         return None
 
     def count(self, cls=None):
@@ -91,8 +91,8 @@ class DBStorage:
         Returns the number of objects in storage matching the given class name.
         If no name is passed, returns the count of all objects in storage.
         """
-        nobjects = 0
+        count = 0
         for clss in classes:
             if cls is None or cls is classes[clss] or cls is clss:
-                nobjects += len(self.__session.query(classes[clss]).all())
-        return nobjects
+                count += self.__session.query(classes[clss]).count()
+        return
