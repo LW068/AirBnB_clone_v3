@@ -115,9 +115,6 @@ class DBStorage:
                 self.__session.query(City).count(),
                 self.__session.query(User).count(),
                 self.__session.query(Place).count(),
-                self.__session.query(Review).count(),
-                self.__session.query(Amenity).count(),
-                self.__session.query(PlaceAmenity).count()
+                self.__session.query(Review).count()
             ])
         return count
-
