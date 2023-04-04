@@ -10,12 +10,11 @@ from os import getenv
 
 
 app = Flask(__name__)
-CORS(app, origins="0.0.0.0")
 app.register_blueprint(app_views)
 
 
 @app.teardown_appcontext
-def tear_down(self):
+def tear_appcontext(self):
     '''
     close query after each session
     '''
@@ -27,9 +26,10 @@ def not_found(error):
     '''
     return JSON formatted 404 status code response
     '''
-    return make_response(jsonify({'error': 'Not found'}), 404)
+    return jsonify({'error': 'Not found'}), 404
 
 
 if __name__ == "__main__":
-    app.run(host=getenv("HBNB_API_HOST", "0.0.0.0"),
-            port=int(getenv("HBNB_API_PORT", "5000")), threaded=True)
+    hosts = getenv('HBNB_API_HOST', default='0.0.0.0')
+    ports = getenv('HBNB_API_PORT', default=5000)
+    app.run(host=hosts, port=ports, threaded=True)
