@@ -60,15 +60,15 @@ def create_state():
         return jsonify(obj.to_dict()), 201
 
 
-@app_views.route('/states/<states_id>', methods=['PUT'], strict_slashes=False)
-def update_state(states_id):
+@app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
+def update_state(state_id):
     '''
         update existing state object
     '''
     if not request.get_json():
         return jsonify({"error": "Not a JSON"}), 400
 
-    obj = storage.get("State", states_id)
+    obj = storage.get("State", state_id)
     if obj is None:
         abort(404)
     obj_data = request.get_json()
