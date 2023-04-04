@@ -42,9 +42,10 @@ def post_state():
         abort(400, "Not a JSON")
     if "name" not in new_state:
         abort(400, "Missing name")
-    storage.new(State(**new_state))
+    state = State(**new_state)
+    storage.new(state)
     storage.save()
-    return make_response(jsonify(State(**new_state).to_dict()), 201)
+    return make_response(jsonify(state.to_dict()), 201)
 
 
 @app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
