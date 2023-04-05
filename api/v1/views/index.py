@@ -9,4 +9,3 @@ from models import storage
 def status():
     """Returns a JSON status"""
     return jsonify({"status": "OK"})
-
